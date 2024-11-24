@@ -12,10 +12,16 @@ app.use(express.json());
 let db;
 
 (async () => {
-  db = await open({
-    fileName: './BD4-1/database.sqlite',
-    driver: sqlite3.Database,
-  });
+  try {
+    const dbPath = resolve(__dirname, './BD4-1/database.sqlite');
+    db = await open({
+      filename: dbPath,
+      driver: sqlite3.Database,
+    });
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Failed to connect to the database:', error);
+  }
 })();
 
 async function fetchAllMovies() {
@@ -25,7 +31,7 @@ async function fetchAllMovies() {
 }
 
 app.get('/movies', async (req, res) => {
-  let results = fetchAllMovies();
+  let results = await fetchAllMovies();
   res.status(200).json(results);
 });
 
